@@ -2,6 +2,11 @@ const request = require("supertest");
 const app = require("../app");
 const Note = require("../src/models/Note");
 
+const basicAuthCredentials = {
+  username: "admin",
+  password: "your_test_secret_key",
+};
+
 describe("Note API", () => {
   beforeEach(async () => {
     await Note.deleteMany({});
@@ -11,7 +16,10 @@ describe("Note API", () => {
     it("should create a new note", async () => {
       const noteData = { title: "Test Note", content: "This is a test note" };
 
-      const res = await request(app).post("/api/notes").send(noteData);
+      const res = await request(app)
+        .post("/api/notes")
+        .send(noteData)
+        .auth(basicAuthCredentials.username, basicAuthCredentials.password);
 
       expect(res.status).toBe(201);
       expect(res.body).toMatchObject({
@@ -23,7 +31,10 @@ describe("Note API", () => {
     it("should return validation error if title is missing", async () => {
       const noteData = { content: "This is a test note" };
 
-      const res = await request(app).post("/api/notes").send(noteData);
+      const res = await request(app)
+        .post("/api/notes")
+        .send(noteData)
+        .auth(basicAuthCredentials.username, basicAuthCredentials.password);
 
       expect(res.status).toBe(400);
       expect(res.body).toHaveProperty("errors");
@@ -39,7 +50,9 @@ describe("Note API", () => {
       ];
       await Note.create(existingNotes);
 
-      const res = await request(app).get("/api/notes");
+      const res = await request(app)
+        .get("/api/notes")
+        .auth(basicAuthCredentials.username, basicAuthCredentials.password);
 
       expect(res.status).toBe(200);
       expect(res.body).toBeInstanceOf(Array);
@@ -54,7 +67,9 @@ describe("Note API", () => {
         content: "This is a test note",
       });
 
-      const res = await request(app).get(`/api/notes/${newNote._id}`);
+      const res = await request(app)
+        .get(`/api/notes/${newNote._id}`)
+        .auth(basicAuthCredentials.username, basicAuthCredentials.password);
 
       expect(res.status).toBe(200);
       expect(res.body).toBeInstanceOf(Object);
@@ -67,7 +82,9 @@ describe("Note API", () => {
     it("should return 404 if note is not found", async () => {
       const nonExistingId = "60cfeaeeb166a1372c61b3e3"; // A random non-existing ID
 
-      const res = await request(app).get(`/api/notes/${nonExistingId}`);
+      const res = await request(app)
+        .get(`/api/notes/${nonExistingId}`)
+        .auth(basicAuthCredentials.username, basicAuthCredentials.password);
 
       expect(res.status).toBe(404);
       expect(res.body).toHaveProperty("error", "Not Found");
@@ -84,7 +101,8 @@ describe("Note API", () => {
 
       const res = await request(app)
         .put(`/api/notes/${existingNote._id}`)
-        .send(updatedData);
+        .send(updatedData)
+        .auth(basicAuthCredentials.username, basicAuthCredentials.password);
 
       expect(res.status).toBe(200);
       expect(res.body).toBeInstanceOf(Object);
@@ -100,7 +118,8 @@ describe("Note API", () => {
 
       const res = await request(app)
         .put(`/api/notes/${nonExistingId}`)
-        .send(updatedData);
+        .send(updatedData)
+        .auth(basicAuthCredentials.username, basicAuthCredentials.password);
 
       expect(res.status).toBe(404);
       expect(res.body).toHaveProperty("error", "Not Found");
@@ -114,7 +133,9 @@ describe("Note API", () => {
         content: "This is a test note",
       });
 
-      const res = await request(app).delete(`/api/notes/${existingNote._id}`);
+      const res = await request(app)
+        .delete(`/api/notes/${existingNote._id}`)
+        .auth(basicAuthCredentials.username, basicAuthCredentials.password);
 
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty("message", "Note deleted successfully");
@@ -123,7 +144,9 @@ describe("Note API", () => {
     it("should return 404 if note is not found", async () => {
       const nonExistingId = "60cfeaeeb166a1372c61b3e3"; // A random non-existing ID
 
-      const res = await request(app).delete(`/api/notes/${nonExistingId}`);
+      const res = await request(app)
+        .delete(`/api/notes/${nonExistingId}`)
+        .auth(basicAuthCredentials.username, basicAuthCredentials.password);
 
       expect(res.status).toBe(404);
       expect(res.body).toHaveProperty("error", "Not Found");
