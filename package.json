@@ -4,7 +4,7 @@
   "description": "A simple RESTful API for note-taking, built with Node.js, Express.js, and MongoDB. Features CRUD operations for managing text notes with data validation, error handling.",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "dev": "nodemon --env-file=.env app.js",
     "start": "node --env-file=.env app.js"
   },
@@ -22,5 +22,9 @@
     "express": "^4.18.2",
     "express-validator": "^7.0.1",
     "mongoose": "^8.0.3"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3"
   }
 }
